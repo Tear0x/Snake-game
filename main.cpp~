@@ -1,0 +1,41 @@
+#include <iostream>
+#include <string>
+using namespace std;
+int main()
+{
+	//create map
+	char map[26][64];
+	//init the first line
+		for(int x = 0; x < 64; x++)
+		 {
+		 	map[0][x]='-';
+		 }
+		
+		//init the middle of the map
+	for(int y = 1; y < 26; y++)
+	{
+		map[y][0]='!';//draw the left side
+		for(int x = 1; x < 64; x++)
+		 {
+		 	map[y][x]=' ';////put white space  inside the map
+		 }
+		 map[y][63]='!'; //draw the right side
+		
+	} 
+	
+	//draw the bottom line
+		for(int x = 0; x < 64; x++)
+		 {
+		 	map[25][x]='-';
+		 }
+		 
+		 //display the whole map
+	for(int y = 0; y < 26; y++)
+	{
+		for(int x = 0; x < 64; x++)
+		 {
+		 	cout << map[y][x];
+		 }
+		cout << endl;
+	} 
+}
