@@ -34,6 +34,7 @@ struct Snake
 
   struct Snake snake;
 
+int score = 0;
 
 int main()
 {
@@ -64,6 +65,7 @@ bool updateMap()
 	initscr();
 	cbreak();
 	timeout(30);
+	keypad(stdscr, TRUE);
 	int k = getch();
 	endwin();
 	clearMap();
@@ -71,6 +73,7 @@ bool updateMap()
 	switch(k)
 	{
         case 'z':
+	case KEY_UP:
         {
 		if(map.dir != 1)
 		{
@@ -79,18 +82,21 @@ bool updateMap()
 		break;
 	}
 	case 's':
+	case KEY_DOWN:
 	{
 		if(map.dir != 0)
 			map.dir = 1;
 		break;
 	}
 	case 'q':
+	case KEY_LEFT:
 	{
 		if(map.dir != 3)
 			map.dir = 2;
 		break;
 	}
 	case 'd':
+	case KEY_RIGHT:
 	{
 		if(map.dir != 2)
 			map.dir = 3;
@@ -131,6 +137,7 @@ bool updateMap()
 	    posSnkFdY = rand()%24 + 1;
 	    eaten = true;
 	    printf("%c\n", '\a');
+	    score ++;
 	  }
 	if(map.map[snake.yy][snake.xx] == ' ' || map.map[snake.yy][snake.xx] == '+'  )
 		{
@@ -240,7 +247,7 @@ for(int p = 0; p < 30; p++)
 {
 	cout<<endl;
 }
-
+ cout << "                    SCORE : " << score << endl;
   for(int y = 0; y < map.y; y++)
     {
       for(int x = 0; x < map.x; x++)
