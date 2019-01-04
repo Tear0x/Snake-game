@@ -8,7 +8,7 @@ void initMap();
 void displayMap();
 bool updateMap();
 void clearMap();
-
+void addFood();
 
 struct Map
 {
@@ -18,19 +18,43 @@ struct Map
 	char map[26][64];
 };
 
+
 struct Map map;
-int posSnkX = 5;
-int posSnkY = 5;
+int posSnkX = 32;
+int posSnkY = 13;
+int posSnkFdX = 10;
+int posSnkFdY = 10;
+
+struct Snake
+{
+  int xx;
+  int yy;
+  struct Snake* keu;
+};
+
+  struct Snake snake;
+
 
 int main()
 {
 	initMap();//create map
 	displayMap();
-  	while(updateMap())
+	cout << "press any control key to start" << endl;
+        initscr();
+	timeout(-1);
+	getch();
+	endwin();
+	
+	while(updateMap())
 	{
 		displayMap();//display the whole map
 		usleep(50000);
 	}
+}
+
+void addFood()
+{
+	map.map[posSnkFdY][posSnkFdX] = '+';
 }
 
 bool updateMap()
@@ -73,37 +97,68 @@ bool updateMap()
 		break;
 	}
        }	
-	
+	int pastX = snake.xx;
+	int pastY = snake.yy;
 	switch(map.dir)
         {
         case 0:
         {
-                posSnkY--;
+                snake.yy--;
                 break;
         }
         case 1:
         {
-                posSnkY++;
+	        snake.yy++;
                 break;
         }
         case 2:
         {
-                posSnkX--;
+                snake.xx--;
                 break;
         }
         case 3:
         {
-                posSnkX++;
+	        snake.xx++;
                 break;
         }
        }
 	
 
-     
-
-	if(map.map[posSnkY][posSnkX] == ' ')
+	bool eaten = false;
+        if(map.map[snake.yy][snake.xx] == '+')
+	  {
+	    posSnkFdX = rand()%62 + 1;
+	    posSnkFdY = rand()%24 + 1;
+	    eaten = true;
+	    printf("%c\n", '\a');
+	  }
+	if(map.map[snake.yy][snake.xx] == ' ' || map.map[snake.yy][snake.xx] == '+'  )
 		{
-			map.map[posSnkY][posSnkX] = 'o';
+		  struct Snake* snk = &snake;
+		  while (snk != NULL)
+		    {
+		      map.map[snk->yy][snk->xx] = 'o';
+		      if(snk->keu != NULL)
+			{
+			  snk = snk->keu;
+			  int posX = snk->xx;
+			  int posY = snk->yy;
+			  snk->xx = pastX;
+			  snk->yy = pastY;
+			  pastX = posX;
+			  pastY = posY;
+			}
+		      else if(eaten == true)
+			{
+			  snk->keu = new struct Snake;
+			  snk->keu->xx = pastX;
+			  snk->keu->yy = pastY;
+			  snk->keu->keu = NULL;
+			  snk = NULL;
+			}
+		      else
+			snk = NULL;
+		    }
 			return true;
 		}
 	else
@@ -139,7 +194,7 @@ void clearMap()
                  {
                         map.map[map.y - 1][x]='-';
                  }
-
+			addFood();
 
 }
 
@@ -148,7 +203,9 @@ void initMap()
  map.y = 26;
  map.x = 64;
  map.dir = 0;
-
+ snake.xx = 32;
+ snake.yy = 13;
+ snake.keu = NULL;
   //init the first line
   for(int x = 0; x < map.x; x++)
     {

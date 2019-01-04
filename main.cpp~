@@ -1,41 +1,208 @@
 #include <iostream>
 #include <string>
+#include <unistd.h>
+#include <curses.h>
 using namespace std;
+
+void initMap();
+void displayMap();
+bool updateMap();
+void clearMap();
+void addFood();
+
+struct Map
+{
+	int y;
+	int x;
+	int dir;
+	char map[26][64];
+};
+
+
+struct Map map;
+int posSnkX = 5;
+int posSnkY = 5;
+int posSnkFdX = 10;
+int posSnkFdY = 10;
+
 int main()
 {
-	//create map
-	char map[26][64];
-	//init the first line
-		for(int x = 0; x < 64; x++)
-		 {
-		 	map[0][x]='-';
-		 }
-		
-		//init the middle of the map
-	for(int y = 1; y < 26; y++)
+	initMap();//create map
+	displayMap();
+  	while(updateMap())
 	{
-		map[y][0]='!';//draw the left side
-		for(int x = 1; x < 64; x++)
+		displayMap();//display the whole map
+		usleep(50000);
+	}
+}
+
+void addFood()
+{
+	map.map[posSnkFdY][posSnkFdX] = '+';
+}
+
+bool updateMap()
+{
+
+//	scanf("%c", &k);
+	initscr();
+	cbreak();
+	timeout(30);
+	int k = getch();
+	endwin();
+	clearMap();
+
+	switch(k)
+	{
+        case 'z':
+        {
+		if(map.dir != 1)
+		{
+		map.dir = 0;
+		}
+		break;
+	}
+	case 's':
+	{
+		if(map.dir != 0)
+			map.dir = 1;
+		break;
+	}
+	case 'q':
+	{
+		if(map.dir != 3)
+			map.dir = 2;
+		break;
+	}
+	case 'd':
+	{
+		if(map.dir != 2)
+			map.dir = 3;
+		break;
+	}
+       }	
+	
+	switch(map.dir)
+        {
+        case 0:
+        {
+                posSnkY--;
+                break;
+        }
+        case 1:
+        {
+                posSnkY++;
+                break;
+        }
+        case 2:
+        {
+                posSnkX--;
+                break;
+        }
+        case 3:
+        {
+                posSnkX++;
+                break;
+        }
+       }
+	
+
+     
+
+	if(map.map[posSnkY][posSnkX] == ' ')
+		{
+			map.map[posSnkY][posSnkX] = 'o';
+			return true;
+		}
+	else
+		{
+			cout << "YOU DIED" << endl;	
+			return false;
+		}
+}
+
+void clearMap()
+{
+	
+  //init the first line
+  for(int x = 0; x < map.x; x++)
+    {
+      map.map[0][x]='-';
+    }
+  
+                //init the middle of the map
+        for(int y = 1; y < map.y; y++)
+        {
+                map.map[y][0]='!';//draw the left side
+                for(int x = 1; x < map.x; x++)
+                 {
+                        map.map[y][x]=' ';////put white space  inside the map
+                 }
+                 map.map[y][map.x - 1]='!'; //draw the right side
+
+        }
+
+        //draw the bottom line
+                for(int x = 0; x < map.x; x++)
+                 {
+                        map.map[map.y - 1][x]='-';
+                 }
+			addFood();
+
+}
+
+void initMap()
+{
+ map.y = 26;
+ map.x = 64;
+ map.dir = 0;
+
+  //init the first line
+  for(int x = 0; x < map.x; x++)
+    {
+      map.map[0][x]='-';
+    }
+  
+		//init the middle of the map
+	for(int y = 1; y < map.y; y++)
+	{
+		map.map[y][0]='!';//draw the left side
+		for(int x = 1; x < map.x; x++)
 		 {
-		 	map[y][x]=' ';////put white space  inside the map
+		 	map.map[y][x]=' ';////put white space  inside the map
 		 }
-		 map[y][63]='!'; //draw the right side
+		 map.map[y][map.x - 1]='!'; //draw the right side
 		
 	} 
 	
 	//draw the bottom line
-		for(int x = 0; x < 64; x++)
+		for(int x = 0; x < map.x; x++)
 		 {
-		 	map[25][x]='-';
+		 	map.map[map.y - 1][x]='-';
 		 }
 		 
-		 //display the whole map
-	for(int y = 0; y < 26; y++)
+
+  
+}
+void displayMap()
+{
+  
+for(int p = 0; p < 30; p++)
+{
+	cout<<endl;
+}
+
+  for(int y = 0; y < map.y; y++)
+    {
+      for(int x = 0; x < map.x; x++)
 	{
-		for(int x = 0; x < 64; x++)
-		 {
-		 	cout << map[y][x];
-		 }
-		cout << endl;
-	} 
+	  cout << map.map[y][x];
+	}
+      cout << endl;
+    }
+for(int c = 0; c < 30; c++)
+{
+	cout<<endl;
+}
+
 }
