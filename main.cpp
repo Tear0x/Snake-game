@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <unistd.h>
+#include <curses.h>
 using namespace std;
 
 void initMap();
@@ -13,6 +14,7 @@ struct Map
 {
 	int y;
 	int x;
+	int dir;
 	char map[26][64];
 };
 
@@ -23,6 +25,7 @@ int posSnkY = 5;
 int main()
 {
 	initMap();//create map
+	displayMap();
   	while(updateMap())
 	{
 		displayMap();//display the whole map
@@ -32,33 +35,71 @@ int main()
 
 bool updateMap()
 {
-	char k;
-	scanf("%c", &k);
+
+//	scanf("%c", &k);
+	initscr();
+	cbreak();
+	timeout(30);
+	int k = getch();
+	endwin();
 	clearMap();
 
 	switch(k)
 	{
         case 'z':
         {
-		posSnkY--;
+		if(map.dir != 1)
+		{
+		map.dir = 0;
+		}
 		break;
 	}
 	case 's':
 	{
-		posSnkY++;
+		if(map.dir != 0)
+			map.dir = 1;
 		break;
 	}
 	case 'q':
 	{
-		posSnkX--;
+		if(map.dir != 3)
+			map.dir = 2;
 		break;
 	}
 	case 'd':
 	{
-		posSnkX++;
+		if(map.dir != 2)
+			map.dir = 3;
 		break;
 	}
        }	
+	
+	switch(map.dir)
+        {
+        case 0:
+        {
+                posSnkY--;
+                break;
+        }
+        case 1:
+        {
+                posSnkY++;
+                break;
+        }
+        case 2:
+        {
+                posSnkX--;
+                break;
+        }
+        case 3:
+        {
+                posSnkX++;
+                break;
+        }
+       }
+	
+
+     
 
 	if(map.map[posSnkY][posSnkX] == ' ')
 		{
@@ -106,6 +147,7 @@ void initMap()
 {
  map.y = 26;
  map.x = 64;
+ map.dir = 0;
 
   //init the first line
   for(int x = 0; x < map.x; x++)
